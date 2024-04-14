@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: Folders info API
+  description: HTTP API for receive folders info by path
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8000/api'
+
+paths:
+  /roots:
+    get:
+      summary: Returns root directories
+      responses:
+        200:
+          description: Successful directories response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /folder:
+    get:
+      summary: Returns folder content
+      parameters:
+        - in: query
+          name: path
+          schema:
+            type: string
+            example: /drive1/home/images
+          required: true
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    example: /drive1/home/images
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: me.png
+                        type:
+                          type: string
+                          example: png
+                        size:
+                          type: string
+                          example: 2.8 MiB
+                  dirs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: summer-2024
+                        size:
+                          type: string
+                          example: 1.1 GiB
+        400:
+          description: Unable to read requested folder because it is not in root folders list
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /file:
+    get:
+      summary: Returns file info
+      parameters:
+        - in: query
+          name: path
+          schema:
+            type: string
+            example: /drive1/home/images/me.png
+          required: true
+      responses:
+        200:
+          description: File info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: me.png
+                  size:
+                    type: string
+                    example: 1.3MiB
+                  created:
+                    type: string
+                    example: 2024-06-24 12:31
+        400:
+          description: Unable to read requested file because its path is not in root folders list
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
