@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Roots</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<div class="header">
+    <h1>Roots:</h1>
+</div>
+
+<div class="roots-container">
+    {{ range .Roots }}
+        <div
+            class="root-item folder-item"
+            onclick="window.location = window.location.origin + '/folder?path=' + {{ . }}"
+        >
+            <span>{{ . }}</span>
+        </div>
+    {{ end }}
+</div>
+
+</body>
+</html>

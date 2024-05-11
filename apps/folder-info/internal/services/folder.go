@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"github.com/ilya-mezentsev/folder-info/pkg/dto"
 	"golang.org/x/sync/errgroup"
 	"log/slog"
 	"os"
@@ -13,49 +14,29 @@ import (
 
 const extPrefix = "."
 
-type (
-	Result struct {
-		Path string `json:"path"`
-
-		Files []File `json:"files"`
-		Dirs  []Dir  `json:"dirs"`
-	}
-
-	File struct {
-		Name string `json:"name"`
-		Type string `json:"type"`
-		Size string `json:"size"`
-	}
-
-	Dir struct {
-		Name string `json:"name"`
-		Size string `json:"size"`
-	}
-)
-
 // Folder collects folder info
-func (c Core) Folder(path string) (Result, error) {
+func (c Core) Folder(path string) (dto.DirInfo, error) {
 	if !c.isPathAllowed(path) {
-		return Result{}, ErrPathIsNotAllowed
+		return dto.DirInfo{}, ErrPathIsNotAllowed
 	}
 
 	f, err := os.Open(path)
 	if err != nil {
 		c.logger.Error("unable to open path", slog.String("path", path), slog.Any("err", err))
 
-		return Result{}, ErrUnknown
+		return dto.DirInfo{}, ErrUnknown
 	}
 
 	files, err := f.ReadDir(0)
 	if err != nil {
 		c.logger.Error("unable to read dir by path", slog.String("path", path), slog.Any("err", err))
 
-		return Result{}, ErrUnknown
+		return dto.DirInfo{}, ErrUnknown
 	}
 
 	var (
 		eg         errgroup.Group
-		result     Result
+		result     dto.DirInfo
 		resultLock sync.Mutex
 	)
 
@@ -75,7 +56,7 @@ func (c Core) Folder(path string) (Result, error) {
 	if err != nil {
 		c.logger.Error("unable to process files by path", slog.String("path", path), slog.Any("err", err))
 
-		return Result{}, ErrUnknown
+		return dto.DirInfo{}, ErrUnknown
 	}
 
 	result.Path = path
@@ -85,7 +66,7 @@ func (c Core) Folder(path string) (Result, error) {
 
 func (c Core) processFile(
 	file os.DirEntry,
-	result *Result,
+	result *dto.DirInfo,
 	resultLock *sync.Mutex,
 	rootPath string,
 ) error {
@@ -109,14 +90,14 @@ func (c Core) processFile(
 		}
 
 		resultLock.Lock()
-		result.Dirs = append(result.Dirs, Dir{
+		result.Dirs = append(result.Dirs, dto.Dir{
 			Name: name,
 			Size: byteCountIEC(size),
 		})
 		resultLock.Unlock()
 	} else {
 		resultLock.Lock()
-		result.Files = append(result.Files, File{
+		result.Files = append(result.Files, dto.File{
 			Name: name,
 			Type: strings.TrimPrefix(filepath.Ext(name), extPrefix),
 			Size: byteCountIEC(size),

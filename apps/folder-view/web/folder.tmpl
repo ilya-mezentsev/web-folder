@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Folder</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<div class="header folder">
+    <h1>Folder: {{ .Path }}</h1>
+
+    <a href="/">Roots</a>
+
+    {{ if .ShowParent }}
+        <a href="{{ .Parent }}">Parent</a>
+    {{ end }}
+</div>
+
+{{ if .Dirs }}
+    <h2>Folders:</h2>
+    <div class="folders-container">
+        {{ range .Dirs }}
+            <div
+                class="folder folder-item"
+                onclick="window.location = window.location.origin + '/folder?path=' + {{ $.Path }} + '/' + {{ .Name }}"
+            >
+                <p>{{ .Name }}</p>
+                <p class="info">Size: {{ .Size }}</p>
+            </div>
+        {{ end }}
+    </div>
+{{ else }}
+    <p>No folders</p>
+{{ end }}
+
+
+{{ if .Files }}
+    <h2>Files:</h2>
+    <div class="files-container">
+        <div class="header file-item">
+            <div class="name">Name</div>
+            <div class="type">Type</div>
+            <div class="size">Size</div>
+        </div>
+
+        {{ range .Files }}
+            <div
+                class="file-item"
+                onclick="window.location = window.location.origin + '/file?path=' + {{ $.Path }} + '/' + {{ .Name }}"
+            >
+                <div class="name">{{ .Name }}</div>
+                <div class="type">{{ .Type }}</div>
+                <div class="size">{{ .Size }}</div>
+            </div>
+        {{ end }}
+    </div>
+{{ else }}
+    <p>No files</p>
+{{ end }}
+
+</body>
+</html>

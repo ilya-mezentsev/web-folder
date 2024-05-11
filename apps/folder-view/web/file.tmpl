@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<div class="header">
+    <h1>File: {{ .Name }}</h1>
+    <h1>Size: {{ .Size }}</h1>
+    <h1>Created: {{ .Created }}</h1>
+
+    <a href="/">Roots</a>
+    <a href="/folder?path={{ .Dir }}">Parent</a>
+</div>
+
+</body>
+</html>

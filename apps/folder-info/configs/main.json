@@ -1,6 +1,7 @@
 {
   "root_dirs": [
-    "/tmp"
+    "/tmp/drive1",
+    "/tmp/drive2"
   ],
   "app_addr": "0.0.0.0:8000"
 }
